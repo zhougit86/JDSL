@@ -7,7 +7,7 @@ public class transInfo {
     public int Times;
     public int LoopIdx;
     public String EventId;
-//    public
+    public volatile
 
     public Object AppInfo;
 }
