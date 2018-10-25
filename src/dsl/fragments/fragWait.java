@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
  * Created by zhou1 on 2018/10/24.
  */
 public class fragWait implements fragment {
-    public String EventId;
-    public int MilliSecond;
-    public fragment fragment;
+    private String EventId;
+    private int MilliSecond;
+    private fragment fragment;
 
     public fragWait(String eventId,int milliSecond,fragment fragment1){
         this.EventId = eventId;
@@ -19,7 +19,11 @@ public class fragWait implements fragment {
     }
 
     public void Exec(transInfo TransInfo) throws Exception{
-        TransInfo.EventId = this.EventId;
+        TransInfo.setEventId(this.EventId);
+        System.out.println("begin wait");
+        TransInfo.threadWait();
+        System.out.println("Wait complete");
+        this.fragment.Exec(TransInfo);
 
     }
 }

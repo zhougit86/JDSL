@@ -21,7 +21,12 @@ public class fragments{
 //        fragList = frag;
 //        TransInfo = trans;
 //    }
-    public ArrayList<fragment> fragList;
+    private ArrayList<fragment> fragList;
+
+    public fragments(ArrayList<fragment> fl){
+        this.fragList = fl;
+    }
+
     public int forEachFragments(transInfo TransInfo)
             throws Exception{
         for (int i = 0; i < fragList.size(); i++){
