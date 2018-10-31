@@ -5,6 +5,7 @@ import dsl.fragments.fragment;
 import dsl.transInfo.transInfo;
 import dsl.errors.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zhou1 on 2018/10/24.
@@ -17,7 +18,7 @@ public class transaction extends Thread {
     public transaction(fragments frag, String name){
         this.name = name;
         this.frag = frag;
-        this.TransInfo = new transInfo("",this);
+        this.TransInfo = new transInfo("");
     }
 
     public synchronized void run() {
@@ -31,20 +32,22 @@ public class transaction extends Thread {
         }
     }
 
-    public synchronized void HandleEvent(String EventId)
+    public void HandleEvent(String EventId)
         throws Exception{
-        if (EventId.equals(this.TransInfo.getEventId())
+
+        if (!EventId.equals(this.TransInfo.getEventId())
                 || EventId.length()==0){
+
             throw new ErrUnexepectedEvent();
         }
-        this.notifyAll();
+        this.TransInfo.notifyEvent();
         this.TransInfo.setEventId("");
         return;
     }
 
     public static void main(String[] args){
         ArrayList<fragment> fl = new ArrayList<>();
-        fl.add(new fragWait("simpleWait",1000,new fragSimple()));
+        fl.add(new fragWait("simpleWait",10000,new fragSimple()));
 
         fragments fs = new fragments(fl);
         transaction ts = new transaction(fs,"simpleTrans");
@@ -52,6 +55,7 @@ public class transaction extends Thread {
         System.out.println("outside");
 
         try{
+            TimeUnit.SECONDS.sleep(1);
             ts.HandleEvent("simpleWait");
         }catch (Exception e){
             e.printStackTrace();

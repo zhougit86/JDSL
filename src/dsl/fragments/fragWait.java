@@ -20,9 +20,10 @@ public class fragWait implements fragment {
 
     public void Exec(transInfo TransInfo) throws Exception{
         TransInfo.setEventId(this.EventId);
+
         System.out.println("begin wait");
-        TransInfo.threadWait();
-        System.out.println("Wait complete");
+        boolean b =TransInfo.timeOut(MilliSecond);
+        System.out.println("Wait complete" + b);
         this.fragment.Exec(TransInfo);
 
     }
