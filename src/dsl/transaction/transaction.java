@@ -1,5 +1,7 @@
 package dsl.transaction;
 
+import dsl.fragments.fragProc;
+import dsl.fragments.fragRetry;
 import dsl.fragments.fragWait;
 import dsl.fragments.fragment;
 import dsl.transInfo.transInfo;
@@ -11,23 +13,25 @@ import java.util.concurrent.TimeUnit;
  * Created by zhou1 on 2018/10/24.
  */
 public class transaction extends Thread {
-    public fragments frag;
+    public fragProc frag;
     public transInfo TransInfo;
     private String name;
 
-    public transaction(fragments frag, String name){
+    public transaction(fragProc frag, String name){
         this.name = name;
         this.frag = frag;
         this.TransInfo = new transInfo("");
     }
 
     public synchronized void run() {
+        System.out.println("Transaction "+this.name+" has Started");
         try{
-            frag.forEachFragments(this.TransInfo);
+            frag.Exec(this.TransInfo);
         }catch (ErrDsl e){
-            System.out.println("got a DSL error:"+e);
-            frag.backEachFragments(this.TransInfo,e.index);
+            System.err.println("got a DSL error:\n"+e);
+//            frag.backEachFragments(this.TransInfo,e.getId());
         }catch (Exception e){
+            System.out.println("other unexpected failure");
             e.printStackTrace();
         }
     }
@@ -38,33 +42,15 @@ public class transaction extends Thread {
         if (!EventId.equals(this.TransInfo.getEventId())
                 || EventId.length()==0){
 
-            throw new ErrUnexepectedEvent();
+            throw new ErrUnexepectedEvent(EventId);
         }
         this.TransInfo.notifyEvent();
         this.TransInfo.setEventId("");
         return;
     }
 
-    public static void main(String[] args){
-        ArrayList<fragment> fl = new ArrayList<>();
-        fl.add(new fragWait("simpleWait",10000,new fragSimple()));
-
-        fragments fs = new fragments(fl);
-        transaction ts = new transaction(fs,"simpleTrans");
-        ts.start();
-        System.out.println("outside");
-
-        try{
-            TimeUnit.SECONDS.sleep(1);
-            ts.HandleEvent("simpleWait");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-}
-
-class fragSimple implements fragment {
-    public void Exec(transInfo TransInfo) throws Exception{
-        System.out.println("simple run");
+    public transaction WithObject(Object appInfo){
+        this.TransInfo.setAppInfo(appInfo);
+        return this;
     }
 }

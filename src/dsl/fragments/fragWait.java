@@ -1,5 +1,6 @@
 package dsl.fragments;
 
+import dsl.errors.ErrTimeout;
 import dsl.transInfo.transInfo;
 
 import java.util.concurrent.TimeUnit;
@@ -18,13 +19,16 @@ public class fragWait implements fragment {
         this.fragment = fragment1;
     }
 
+    @Override
     public void Exec(transInfo TransInfo) throws Exception{
         TransInfo.setEventId(this.EventId);
-
         System.out.println("begin wait");
-        boolean b =TransInfo.timeOut(MilliSecond);
-        System.out.println("Wait complete" + b);
-        this.fragment.Exec(TransInfo);
-
+        if (TransInfo.timeOut(MilliSecond)){
+            TransInfo.setEventId("");
+            this.fragment.Exec(TransInfo);
+        }else{
+            TransInfo.setEventId("");
+            throw new ErrTimeout(this.EventId);
+        }
     }
 }

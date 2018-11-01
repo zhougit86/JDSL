@@ -9,18 +9,6 @@ import dsl.errors.*;
  * Created by zhou1 on 2018/10/24.
  */
 public class fragments{
-//    public ;
-//    public
-//
-//    public fragments(){
-//        fragList = new ArrayList<>();
-//        TransInfo = new transInfo();
-//    }
-//
-//    public fragments(ArrayList<fragment> frag, transInfo trans){
-//        fragList = frag;
-//        TransInfo = trans;
-//    }
     private ArrayList<fragment> fragList;
 
     public fragments(ArrayList<fragment> fl){
@@ -35,9 +23,12 @@ public class fragments{
             }catch (ErrSucc e){
                 System.out.printf("transaction %s success!\n",TransInfo);
                 return 0;
-            }catch (ErrDsl e){
-                e.setId(i);
-                throw e;
+            }catch (Exception e){
+                ErrDsl eDsl = new ErrDsl();
+                eDsl.setId(i);
+                eDsl.setInnerError(e);
+
+                throw eDsl;
             }
         }
         return 0;

@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by zhou1 on 2018/10/31.
  */
+//this is a trial for the condition, nothing to do with the transdsl
 public class trial {
     public static void main(String[] args){
         Lock lock = new ReentrantLock();

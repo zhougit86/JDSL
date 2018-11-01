@@ -39,10 +39,12 @@ public class transInfo {
         this.wc = new waitChannel();
     }
 
+    //通知wait当前等待结束
     public void notifyEvent(){
         this.wc.notifyEvent();
     }
 
+    //在wait当中阻塞，如果是通过Condition唤醒返回true，超时返回false
     public boolean timeOut(int MilliSecond) throws InterruptedException {
         wc.lock.lock();
         boolean b = wc.condition.await(MilliSecond, TimeUnit.MILLISECONDS);//主线程5秒等待
@@ -51,10 +53,22 @@ public class transInfo {
     }
 
     public void setEventId(String eId){
-        this.EventId = eId;
+        synchronized (this){
+            this.EventId = eId;
+        }
     }
 
     public String getEventId(){
-        return this.EventId;
+        synchronized (this){
+            return this.EventId;
+        }
+    }
+
+    public void setAppInfo(Object appInfo){
+        this.AppInfo = appInfo;
+    }
+
+    public Object getAppInfo(){
+        return this.AppInfo;
     }
 }
